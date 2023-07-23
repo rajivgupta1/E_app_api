@@ -16,7 +16,9 @@ app.use(express.json());
 
 // api
 import adminRouter from "./src/router/adminRouter.js";
+import categoryRouter from "./src/router/categoryRouter.js";
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/category", categoryRouter);
 
 app.get("/", (req, res) => {
   res.json({
@@ -26,6 +28,7 @@ app.get("/", (req, res) => {
 });
 
 app.use((error, req, res, next) => {
+  console.log(error);
   const code = error.statusCode || 500;
   res.status(code).json({
     status: "error",

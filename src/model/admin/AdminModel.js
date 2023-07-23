@@ -11,6 +11,10 @@ export const getAdminByEmail = (email) => {
 export const updateAdminById = ({ _id, ...rest }) => {
   return AdminSchema.findByIdAndUpdate(_id, rest);
 };
+//@filter, @updateObj must be an obj
+export const updateAdmin = (filter, updateObj) => {
+  return AdminSchema.findOneAndUpdate(filter, updateObj, { new: true });
+};
 
 export const deleteAdmin = (_id) => {
   return AdminSchema.findByIdAndDelete(_id);
