@@ -1,43 +1,94 @@
-import dotenv from "dotenv";
-dotenv.config();
+import Joi from "joi";
 
-import express from "express";
-const app = express();
-const PORT = process.env.PORT || 8000;
+const SHORTSTRREQ = Joi.string().min(3).max(100).required();
+const SHORTSTR = Joi.string().min(3).max(100);
 
-// middlewares
-import morgan from "morgan";
-import cors from "cors";
-import { mongoConnect } from "./src/config/mongoConfig.js";
-mongoConnect();
-app.use(cors());
-app.use(morgan("dev"));
-app.use(express.json());
+// ======== admin
+export const newAdminValidation = (req, res, next) => {
+  try {
+    //define the schema
+    const schema = Joi.object({
+      fName: SHORTSTRREQ,
+      lName: SHORTSTRREQ,
+      email: SHORTSTR.email({ minDomainSegments: 2 }).required(),
+      phone: SHORTSTRREQ,
+      address: SHORTSTR.allow(""),
+      password: SHORTSTRREQ.min(6),
+    });
 
-// api
-import adminRouter from "./src/router/adminRouter.js";
-import categoryRouter from "./src/router/categoryRouter.js";
-app.use("/api/v1/admin", adminRouter);
-app.use("/api/v1/category", categoryRouter);
+    const { error } = schema.validate(req.body);
 
-app.get("/", (req, res) => {
-  res.json({
-    status: "success",
-    message: "Server is live",
-  });
-});
+    error
+      ? res.json({
+          status: "error",
+          message: error.message,
+        })
+      : next();
+  } catch (error) {
+    next(error);
+  }
+};
+export const loginValidation = (req, res, next) => {
+  try {
+    //define the schema
+    const schema = Joi.object({
+      email: SHORTSTR.email({ minDomainSegments: 2 }).required(),
+      password: SHORTSTRREQ.min(6),
+    });
 
-app.use((error, req, res, next) => {
-  console.log(error);
-  const code = error.statusCode || 500;
-  res.status(code).json({
-    status: "error",
-    message: error.message,
-  });
-});
+    const { error } = schema.validate(req.body);
 
-app.listen(PORT, (error) => {
-  error
-    ? console.log(error)
-    : console.log(`server is running at http://localhost:8000`);
-});
+    error
+      ? res.json({
+          status: "error",
+          message: error.message,
+        })
+      : next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const newAdminVerificationValidation = (req, res, next) => {
+  try {
+    //define the schema
+    const schema = Joi.object({
+      e: SHORTSTRREQ.email({ minDomainSegments: 2 }),
+      c: SHORTSTRREQ,
+    });
+
+    const { error } = schema.validate(req.body);
+
+    error
+      ? res.json({
+          status: "error",
+          message: error.message,
+        })
+      : next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ======== category
+export const updateCatValidation = (req, res, next) => {
+  try {
+    //define the schema
+    const schema = Joi.object({
+      _id: SHORTSTRREQ,
+      title: SHORTSTRREQ,
+      status: SHORTSTRREQ,
+    });
+
+    const { error } = schema.validate(req.body);
+
+    error
+      ? res.json({
+          status: "error",
+          message: error.message,
+        })
+      : next();
+  } catch (error) {
+    next(error);
+  }
+};
