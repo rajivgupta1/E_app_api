@@ -12,6 +12,7 @@ const router = express.Router();
 
 router.get("/", async (req, res, next) => {
   try {
+    console.log(req.userInfo);
     const result = await getCategories();
 
     res.json({
@@ -92,7 +93,6 @@ router.delete("/:_id", async (req, res, next) => {
       message: "Error, Unable to process your request.",
     });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 });
